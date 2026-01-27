@@ -96,6 +96,18 @@ const init = async () => {
             ChatEventHandler(client, eventInfo);
         
         });
+        // Handle alert messages (including region restart alerts)
+        client.container.SLbot.clientEvents.onAlertMessage.subscribe((eventInfo) => {
+            if (eventInfo.message && typeof eventInfo.message === 'string') {
+                logger.log(`[ALERT] ${eventInfo.message}`, 'log');
+                
+                // CHECK FOR REGION RESTART ALERTS
+                if (regionRestartHandler.isRegionRestartAlert(eventInfo.message)) {
+                    logger.log(`[REGION RESTART] Alert detected, triggering evacuation!`, 'warn');
+                    regionRestartHandler.handleRegionRestartAlert(eventInfo.message);
+                }
+            }
+        });
         // TODO: add mappings for Group Notices
 
 
